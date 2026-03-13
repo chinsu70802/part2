@@ -1,7 +1,31 @@
 import { useState } from 'react'
 
+const Header = ({text}) => {
+  return (
+    <h2>{text}</h2>
+  )
+}
+
 const Button = ({handleClick, text}) => {
   return (<button onClick={handleClick}>{text}</button>
+  )
+}
+
+const BestAnecdote = ({anecdotes,votes}) => {
+  let sum = 0
+  votes.forEach(x => {
+    sum += x
+  })
+  if (sum == 0) {
+    return (
+      <p>No anecdotes are leading so far!</p>
+    )
+  }
+  return (
+    <>
+    <p>{anecdotes[votes.indexOf(Math.max(...votes))]}</p>
+    <p>This anecodote leads with votes</p>
+    </>
   )
 }
 
@@ -18,15 +42,28 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+
+  const handleVotes = () => {
+    const copy = [...votes]
+    copy[selected] += 1
+    setVotes(copy)
+  }
 
   const handleClick = () => {
-    setSelected(Math.floor(Math.random()*(anecdotes.length)))
+    const choice = Math.floor(Math.random()*(anecdotes.length))
+    setSelected(choice)
   }
 
   return (
     <div>
+      <Header text={'Anecdote of the day'} />
       <Button handleClick={handleClick} text={'Click here for new anecdotes'}/>
       <p>{anecdotes[selected]}</p>
+      <Button handleClick={handleVotes} text={'Click to vote for the anecdote'}/>
+      <p>This anecdote has {votes[selected]} votes from users</p>
+      <Header text={'Anecdote with most votes'}/>
+      <BestAnecdote anecdotes={anecdotes} votes={votes}/>      
     </div>
   )
 }
